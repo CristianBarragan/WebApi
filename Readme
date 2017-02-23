@@ -1,1 +1,70 @@
 Web Api with Authorization and authentication using Unity as a DI
+
+public DataTable getPlayList(string playList)
+  {
+      SqlConnection connection;
+      SqlCommand command;
+      DataTable data = new DataTable();
+      using (connection = new SqlConnection(connectionString))
+      {
+          command = connection.CreateCommand();
+          command.CommandType = CommandType.StoredProcedure;
+          command.CommandText = "GetPlayList";
+          SqlParameter param = new SqlParameter("@PlayList", playList);
+          command.Parameters.Add(param);
+          try
+          {
+              connection.Open();
+              SqlDataAdapter da = null;
+              using (da = new SqlDataAdapter(command))
+              {
+                  da.Fill(data);
+              }
+          }
+          catch (Exception ex)
+          {
+              throw ex;
+          }
+          finally
+          {
+              command.Dispose();
+              connection.Close();
+          }
+      }
+      return data;
+  }
+  
+  public List<Product> getProducts()
+    {
+        SqlConnection connection;
+        SqlCommand command;
+        DataTable data = new DataTable();
+        using (connection = new SqlConnection(connectionString))
+        {
+            command = connection.CreateCommand();
+            command.CommandType = CommandType.Text;
+            command.CommandText = "select * from Products";
+            try
+            {
+                connection.Open();
+                SqlDataAdapter da = null;
+                using (da = new SqlDataAdapter(command))
+                {
+                    da.Fill(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                command.Dispose();
+                connection.Close();
+            }
+        }
+        return data.AsEnumerable().Select(row => new Product { Id = row.Field<int?>(0).GetValueOrDefault(), 
+                                                               Name = String.IsNullOrEmpty(row.Field<string>(1)) 
+                                                               ? "not found" : row.Field<string>(1)}
+                                          ).ToList();
+    }
