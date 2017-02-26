@@ -68,3 +68,8 @@ public DataTable getPlayList(string playList)
                                                                ? "not found" : row.Field<string>(1)}
                                           ).ToList();
     }
+
+business = new Business(@"data source=ASUS1\ADMIN;initial catalog=playlist;integrated security=True;");
+            var binList = new BindingList<PlayListReport>(business.getPlayList(txtPlayList.Text));
+            var src = new BindingSource(binList, null);
+            dgvProducts.DataSource = src;
